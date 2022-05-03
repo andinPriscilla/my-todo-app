@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { ImBin } from "react-icons/im";
 import { MdOutlineDone } from "react-icons/md";
@@ -8,6 +8,8 @@ import { v4 as uuidv4 } from "uuid";
 
 //  Styles
 import "./App.css";
+
+
 
 /*
   0. Import the necessary packages and/or hooks
@@ -36,33 +38,58 @@ const InnerContainer = styled.div`
     margin-bottom: 3rem;
   }
 
-  > input {
+  > button {
+    padding: 8px;
+    background-color: lightgray;
+  }
+`;
+const Input = styled.div`
+display: flex;
+
+> input {
+  padding: 12px 20px;
+  margin: 8px 0;
+  box-sizing: border-box;
+
+  > input[type="text"]:focus {
+    border: 3px solid #555;
+    background-color: lightblue;
+  }
+}
+  > button {
     padding: 12px 20px;
     margin: 8px 0;
     box-sizing: border-box;
+  }
 
-    > input[type="text"]:focus {
-      border: 3px solid #555;
-      background-color: lightblue;
-    }
-  }
-  > button {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-  }
-`;
+`
 const Todos = styled.div`
   border: 2px solid #555;
-  padding: 10px;
+  
   margin: 5px;
   border-radius: 5px;
+  
 
    > div{
-    > button {
-    margin-left: 10px;
-    margin right: 10px;
-  }
+     display:flex;
+     justify-content:space-between;
+     padding:0 10px;
+     font-size:25px;
+     background:linear-gradient(
+      90deg,
+      rgba(93,12,255,1) 0%,
+      rgba(155,0,250,1) 100%
+    );
+    >div {
+      > button {
+        margin-left: 10px;
+        margin right: 10px;
+        
+        font-size: 24px;
+        cursor: pointer;
+        
+    }
+   
    }
 `;
 
@@ -72,7 +99,15 @@ const App = () => {
   const [todo, setTodo] = useState("");
   function editTodo(e) {
     setTodo(e.target.value);
+   
   }
+ 
+  // focusing on what we put as ref in the input
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus();
+  });
 
   // Add todo to All Todos
   const [todos, setTodos] = useState([]);
@@ -102,7 +137,6 @@ const App = () => {
   const saveInfo = (newTodos) => {
     localStorage.setItem("items", JSON.stringify(newTodos));
   };
-  
 
   function onSubmit(e) {
     console.log(todo);
@@ -116,8 +150,8 @@ const App = () => {
     setTodos(todos);
     setTodo("");
     saveInfo(todos);
-  };
-  
+  }
+
   function deleteTodo(id) {
     // 1. get the id for this todo
     // 2. go through allTodos and select by _id
@@ -129,7 +163,7 @@ const App = () => {
     // 4. update todos in app and localStorage
     setTodos(newTodos);
     saveInfo(newTodos);
-  };
+  }
 
   // Delete all todos from todos and localStorage
   const deleteAllTodos = () => {
@@ -141,20 +175,19 @@ const App = () => {
     <Container>
       <InnerContainer>
         <h1>To Do List</h1>
-
-        <input
-          type="text"
-          name="todotext"
-          id="todotext"
-          placeholder="please insert task"
-          value={todo}
-          onChange={(e) => editTodo(e)}
-          
-          
-        ></input>
-
-        <button onClick={() => onSubmit()}>Submit</button>
-
+        <Input>
+          <input
+            type="text"
+            name="todotext"
+            id="todotext"
+            placeholder="please insert task"
+            value={todo}
+            onChange={(e) => editTodo(e)}
+            ref={inputRef}
+           
+          ></input>
+          <button onClick={() => onSubmit()}>Submit</button>
+        </Input>
         <div>
           {todos.length > 0
             ? todos.map((todo, index) => {
@@ -162,12 +195,14 @@ const App = () => {
                   <Todos>
                     <div key={index}>
                       {todo.todotext}
-                      <button>
-                        <MdOutlineDone />
-                      </button>
-                      <button onClick={() => deleteTodo(todo._id)}>
-                        <ImBin />
-                      </button>
+                      <div>
+                        <button>
+                          <MdOutlineDone />
+                        </button>
+                        <button onClick={() => deleteTodo(todo._id)}>
+                          <ImBin />
+                        </button>
+                      </div>
                     </div>
                   </Todos>
                 );
