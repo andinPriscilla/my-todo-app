@@ -110,7 +110,7 @@ const App = () => {
   });
 
   // Add todo to All Todos
-  const [todos, setTodos] = useState([]);
+  const [todos, setTodos] = useState([]);  
 
   // Get Items from local storage
   function getItemsFromLS() {
@@ -121,7 +121,7 @@ const App = () => {
     //   setTodos(getItems)
     // } else {
     //   setTodos([])
-    // }
+    // 
 
     // 2. With Ternary
     getItems ? setTodos(getItems) : setTodos([]);
@@ -134,7 +134,7 @@ const App = () => {
   }, []);
 
   // Function to save the info into localStorage
-  const saveInfo = (newTodos) => {
+  const saveInfo = (newTodos, newDones) => {
     localStorage.setItem("items", JSON.stringify(newTodos));
   };
 
@@ -144,7 +144,7 @@ const App = () => {
     if (todo.length === 0) return;
 
     // example todo {_id:"", todotext:""}
-    let newTodo = { _id: uuidv4(), todotext: todo };
+    let newTodo = { _id: uuidv4(), todotext: todo, isDone: false };
     console.log(newTodo);
     todos.push(newTodo);
     setTodos(todos);
@@ -170,6 +170,20 @@ const App = () => {
     localStorage.removeItem("items");
     setTodos([]);
   };
+  const toggleDone = (id) => {
+    // 1. using the id as a parameter
+    // 2. go through the todos to check the todo that matches the id
+    // 3. We change the boolean to be the oppoisite of what it was
+
+    let newTodos = todos.map(todo=> {
+      if (todo._id === id) {
+        todo.isDone = !todo.isDone;
+      } 
+      return todo;
+    })
+    setTodos(newTodos);
+    saveInfo(newTodos);
+  }
 
   return (
     <Container>
@@ -189,14 +203,16 @@ const App = () => {
           <button onClick={() => onSubmit()}>Submit</button>
         </Input>
         <div>
+          Todo
           {todos.length > 0
             ? todos.map((todo, index) => {
+              if (todo.isDone === false) {
                 return (
                   <Todos>
                     <div key={index}>
                       {todo.todotext}
                       <div>
-                        <button>
+                        <button  onClick={()=>toggleDone(todo._id)}>
                           <MdOutlineDone />
                         </button>
                         <button onClick={() => deleteTodo(todo._id)}>
@@ -206,10 +222,34 @@ const App = () => {
                     </div>
                   </Todos>
                 );
+              }  
               })
             : "No todos"}
         </div>
-
+        <div>
+          Done
+          {todos.length > 0
+            ? todos.map((todo, index) => {
+              if (todo.isDone === true) {
+                return (
+                  <Todos>
+                    <div key={index}>
+                      {todo.todotext}
+                      <div>
+                        <button  onClick={()=>toggleDone(todo._id)}>
+                          <MdOutlineDone />
+                        </button>
+                        <button onClick={() => deleteTodo(todo._id)}>
+                          <ImBin />
+                        </button>
+                      </div>
+                    </div>
+                  </Todos>
+                );
+              }  
+              })
+            : "No dones"}
+        </div>
         {/* Conditional rendering, when the todos length is > 0 */}
         {todos.length > 0 ? (
           <button onClick={() => deleteAllTodos()}>Clear All Todos</button>
