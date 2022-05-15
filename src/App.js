@@ -1,7 +1,10 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef, useContext } from "react";
 import styled from "styled-components";
 import { ImBin } from "react-icons/im";
 import { MdOutlineDone } from "react-icons/md";
+
+import context from './context/Mycontext'
+
 
 // Packages
 import { v4 as uuidv4 } from "uuid";
@@ -94,9 +97,9 @@ const Todos = styled.div`
 `;
 
 const App = () => {
+  const {todo,setTodo,todos,setTodos}=useContext(context);
   // Create Single Value
   // TEXT ONLY
-  const [todo, setTodo] = useState("");
   function editTodo(e) {
     setTodo(e.target.value);
    
@@ -110,7 +113,6 @@ const App = () => {
   });
 
   // Add todo to All Todos
-  const [todos, setTodos] = useState([]);  
 
   // Get Items from local storage
   function getItemsFromLS() {
